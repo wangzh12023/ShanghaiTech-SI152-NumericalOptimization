@@ -1,0 +1,30 @@
+BARON 25.8.5 (2025.08.05): threads=4
+maxtime=300
+epsr=1e-6
+epsa=1e-8
+outlev=1
+
+===========================================================================
+ Preprocessing found feasible solution with value 0.00000
+ Doing local search
+ Preprocessing found feasible solution with value 500.000
+ Solving bounding LP
+ Starting multi-start local search
+ Preprocessing found feasible solution with value 1800.00
+ Done with local search
+===========================================================================
+  Iteration       Time (s)     Mem   Lower bound     Upper bound   Progress
+          1           0.04    12MB     1800.00         1800.00      100.00%
+
+                         *** Normal completion ***            
+
+ Wall clock time:                     0.04
+ Total CPU time used:                 0.04
+
+ Total no. of BaR iterations:       1
+ Best solution found at node:       1
+ Max. no. of nodes in memory:       1
+ 
+ All done
+===========================================================================
+BARON 25.8.5 (2025.08.05): 1 iterations, optimal within tolerances.

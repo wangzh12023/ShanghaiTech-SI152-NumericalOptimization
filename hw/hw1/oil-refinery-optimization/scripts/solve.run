@@ -1,0 +1,5 @@
+option solver baron;
+option baron_options 'maxtime=300 epsr=1e-6 epsa=1e-8 outlev=1';
+solve;
+display x, y, A, B, P_x, P_y, C_x, C_y, p;  
+display "Objective Value: ", _obj; 

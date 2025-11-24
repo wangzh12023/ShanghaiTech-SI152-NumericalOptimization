@@ -1,0 +1,476 @@
+% homework_questions.tex
+% English LaTeX file, Homework 1 with points
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+
+\usepackage{verbatim} 
+\usepackage{listings} 
+
+
+\geometry{a4paper,margin=1in}
+\title{Numerical Optimization — HW1}
+\date{\vspace{-5ex}}
+\author{\vspace{-5ex}} 
+\begin{document}
+	\maketitle
+	\vspace{-9ex}
+	\begin{center}
+		\textbf{Deadline: October 8, 2025}
+	\end{center}
+	\begin{enumerate}
+		\item (10 points) Let $A\in\mathbb{R}^{n\times n}$ be an invertible matrix and $B\in\mathbb{R}^{n\times n}$. If
+		\[
+		\|A^{-1}(B-A)\|_2 < 1,
+		\]
+		prove that $B$ is also invertible, and moreover
+		\[
+		\|B^{-1}\|_2 \le \frac{\|A^{-1}\|_2}{1-\|A^{-1}(A-B)\|_2}.
+		\]
+        
+\bigskip
+        \textbf{Solution:}
+\bigskip
+
+\textbf{1. Prove B is invertible}
+\bigskip
+
+$B = A + (B-A)$.
+
+$B = A\left(I + A^{-1}(B-A)\right)$.
+
+We have known that $\|A^{-1}(B-A)\|_2 = \|A^{-1}(A-B)\|_2 < 1$.
+
+According to the properties of matrix inverse, we know if a matrix norm $\|X\| < 1$, then the matrix $(I-X)$ is invertible. This is because its inverse can be expressed as a convergent Neumann series:
+$(I-X)^{-1} = \sum_{k=0}^{\infty} X^k = I + X + X^2 + \dots$
+
+And also:
+A matrix $\|X\| < 1$ implies all eigenvalues $\lambda$ of $X$ satisfy $|\lambda| < 1$. This means all eigenvalues of $(I-X)$ are non-zero, making $(I-X)$ invertible.
+
+So $I + A^{-1}(B-A)$ is invertible, as the product of two invertible matrices is also invertible, so the matrix $B = A\left(I + A^{-1}(B-A)\right)$ must also be invertible.
+
+\bigskip \bigskip
+\textbf{2. Prove the inequality}
+\bigskip 
+
+Let $X = A^{-1}(A-B)$
+
+$B^{-1} = (A(I-X))^{-1} = (I-X)^{-1}A^{-1}$.
+
+Because for two matrix $\|MN\| \le \|M\|\|N\|$, 
+
+So
+$\|B^{-1}\|_2 = \|(I-X)^{-1}A^{-1}\|_2 \le \|(I-X)^{-1}\|_2 \|A^{-1}\|_2$.
+
+and: 
+$(I-X)^{-1} = I + X + X^2 + X^3 + \dots$
+
+and because: $\|X^k\|_2 \le \|X\|_2^k$:
+
+So:
+$\|(I-X)^{-1}\|_2 = \|\sum_{k=0}^{\infty} X^k\|_2 \le \sum_{k=0}^{\infty} \|X^k\|_2 \le \sum_{k=0}^{\infty} \|X\|_2^k = \frac{1}{1-\|X\|_2}$.
+
+
+i.e.
+$\|(I-X)^{-1}\|_2 \le \frac{1}{1-\|X\|_2}$.
+
+So 
+$\|B^{-1}\|_2 \le \frac{1}{1-\|X\|_2}\|A^{-1}\|_2 = \frac{\|A^{-1}\|_2}{1-\|X\|_2}$.
+
+
+
+Substituting this back into the final inequality :
+\[
+\|B^{-1}\|_2 \le \frac{\|A^{-1}\|_2}{1-\|A^{-1}(A-B)\|_2}.
+\]
+
+        
+		
+		\newpage
+		\item (15 points) Let $G:\mathbb{R}^n\to\mathbb{R}^m$ be a differentiable function, and suppose that its Jacobian $\nabla G$ is $L$-Lipschitz under the operator norm, i.e., for any $u,v\in\mathbb{R}^n$,
+		\[
+		\|\nabla G(u)-\nabla G(v)\|_{op} \le L\|u-v\|.
+		\]
+		Prove that for any $x,y\in\mathbb{R}^n$, the inequality holds:
+		\[
+		\|G(x)-G(y)-\nabla G(y)(x-y)\| \le \tfrac{1}{2}L\|x-y\|^2.
+		\]
+
+
+\textbf{Solution}
+
+
+Let $f(t) = G(y+t(x-y))$ for $t \in [0,1]$
+
+$$f'(t) = \nabla G(y+t(x-y))(x-y)$$
+
+$$G(x)-G(y) = f(1)-f(0) = \int_0^1 f'(t) dt = \int_0^1 \nabla G(y+t(x-y))(x-y) dt$$
+
+So
+$$G(x)-G(y)-\nabla G(y)(x-y) = \int_0^1 \nabla G(y+t(x-y))(x-y) dt - \nabla G(y)(x-y)$$
+ And because
+$$\nabla G(y)(x-y) = \int_0^1 \nabla G(y)(x-y) dt$$
+Substituting this back into the equation:$$G(x)-G(y)-\nabla G(y)(x-y) = \int_0^1 \left(\nabla G(y+t(x-y)) - \nabla G(y)\right)(x-y) dt$$
+
+Take the norm of both sides :$$\|G(x)-G(y)-\nabla G(y)(x-y)\| = \left\|\int_0^1 \left(\nabla G(y+t(x-y)) - \nabla G(y)\right)(x-y) dt\right\|$$And using the inequality of integral:$$\|G(x)-G(y)-\nabla G(y)(x-y)\| \le \int_0^1 \left\|\left(\nabla G(y+t(x-y)) - \nabla G(y)\right)(x-y)\right\| dt$$Using the inequality: $\|A\mathbf{v}\| \le \|A\|_{op}\|\mathbf{v}\|$ for any matrix $A$ and vector $\mathbf{v}$:$$\left\|\left(\nabla G(y+t(x-y)) - \nabla G(y)\right)(x-y)\right\| \le \|\nabla G(y+t(x-y)) - \nabla G(y)\|_{op}\|x-y\|$$ And becuase:$$\|\nabla G(u)-\nabla G(v)\|_{op} \le L\|u-v\|$$So let $u = y+t(x-y)$ and $v=y$. Then:$$\|\nabla G(y+t(x-y)) - \nabla G(y)\|_{op} \le L\|(y+t(x-y))-y\| = L\|t(x-y)\| = L|t|\|x-y\|$$Since $t \in [0,1]$, $|t| = t$. Therefore:$$\|\nabla G(y+t(x-y)) - \nabla G(y)\|_{op} \le Lt\|x-y\|$$Substituting this back:$$\|G(x)-G(y)-\nabla G(y)(x-y)\| \le \int_0^1 Lt\|x-y\| \cdot \|x-y\| dt$$
+$$\|G(x)-G(y)-\nabla G(y)(x-y)\| \le \int_0^1 Lt\|x-y\|^2 dt$$
+$$\|G(x)-G(y)-\nabla G(y)(x-y)\| \le L\|x-y\|^2 \int_0^1 t dt$$
+$$\int_0^1 t dt =\frac{1}{2}$$
+
+So:
+$$\|G(x)-G(y)-\nabla G(y)(x-y)\| \le \tfrac{1}{2}L\|x-y\|^2$$
+
+
+
+
+
+
+
+
+
+
+
+        
+		\newpage
+		\item (15 points) Suppose a sequence $\{x_k\}$ in $\mathbb{R}^n$ satisfies $\lim_{k\to \infty}\|x_{k}-x_{k+1}\|_2 = 0$.
+		
+		(1) Does $\{x_k\}$ have limit points? Why?
+		
+		(2) Does $\{x_k\}$ converge? If not, give an example. If yes, provide a proof.
+		
+		(3) If $\sum^{\infty}_{k=1}\|x_k-x_{k-1}\|^2 < \infty$, does $\{x_k\}$ converge? If not, give a counterexample. If yes, provide a proof.
+
+\bigskip 
+\textbf{Solution}
+
+\textbf{(1)}
+\bigskip 
+
+May not.
+
+Because the sequence $\{x_k\}$ may not be bounded. 
+
+When $x_k = \sqrt{k}$, 
+
+$\|x_{k}-x_{k+1}\|_2 =  \|\sqrt{k} - \sqrt{k+1}\|_2 = \|\frac{\sqrt{k} + \sqrt{k+1}}{k-(k+1)}\|_2 = \|\sqrt{k} + \sqrt{k+1}\|_2$
+
+$\lim_{k\to \infty}\|x_{k}-x_{k+1}\|_2 = \lim_{k\to \infty}\|\sqrt{k} + \sqrt{k+1}\|_2 \to \infty$.
+
+So $\{x_k\}$ may be unbounded, so it may not have limit points.
+
+\bigskip 
+\textbf{(2)}
+
+
+No.
+
+When $x_k = \sqrt{k}$, according to (1), when $k\to \infty$, $x_k \to \infty$  so it is not converged.
+
+
+
+\textbf{(3)}
+\bigskip 
+
+
+
+For any $m > n$, we have:
+\begin{align}
+\|x_m - x_n\|_2 &= \left\|\sum_{j=n+1}^{m} (x_j - x_{j-1})\right\|_2
+\end{align}
+
+Using the Cauchy--Schwarz inequality :
+\begin{align}
+\|x_m - x_n\|_2^2 &\leq \sum_{j=n+1}^{m} \|x_j - x_{j-1}\|_2^2
+\end{align}
+
+Since $\sum^{\infty}_{k=1}\|x_k-x_{k-1}\|^2 < \infty$, for any $\epsilon > 0$, there exists an $N$ such that for all $n \geq N$:
+\begin{align}
+\sum_{j=n+1}^{\infty} \|x_j - x_{j-1}\|_2^2 < \epsilon^2
+\end{align}
+
+Therefore, for any $m > n \geq N$:
+\begin{align}
+\|x_m - x_n\|_2^2 &\leq \sum_{j=n+1}^{m} \|x_j - x_{j-1}\|_2^2 \\
+&< \epsilon^2
+\end{align}
+
+This implies:
+\begin{align}
+\|x_m - x_n\|_2 < \epsilon
+\end{align}
+
+Since $\mathbb{R}^n$ is complete, the sequence converges.
+
+
+
+
+        
+		\newpage
+		\item (30 points) \textbf{Oil Refinery Problem (Lecture 0, page 30).}  
+		
+		Consider the oil refinery optimization problem given in Lecture 0 (page 30).  
+		Your task is to implement this problem in AMPL and solve it either by:  
+		\begin{itemize}
+			\item Submitting the AMPL model to the NEOS server, or  
+			\item Using a solver available in other optimization software (e.g., CPLEX, Gurobi, IPOPT).  
+		\end{itemize}
+		
+		You may choose your own initial values if required by the solver.  
+		
+		In your report, you should clearly provide:  
+		\begin{enumerate}
+			\item The complete AMPL model (or the code in the solver/software you used).  
+			\item The solution obtained (values of all decision variables).  
+			\item The optimal value of the objective function.  
+			\item The solver’s exit flag or termination status.  
+			\item A brief explanation (in English) of how you set up the problem, selected the initial values, and interpreted the results.  
+		\end{enumerate}
+
+
+    \textbf{Solution}
+
+\textbf{AMPL model file}
+
+\lstinputlisting[
+caption={AMPL Model File },
+language=bash 
+]{model/pooling.mod}
+
+
+\textbf{Data file}
+
+\lstinputlisting[
+caption={Data File },
+language=bash 
+]{data/pooling.dat}
+
+\textbf{Command file}
+
+\lstinputlisting[
+caption={Command file},
+language=bash 
+]{scripts/solve.run}
+
+\vspace{0.5cm}
+The solution obtained is:
+
+\begin{align*}
+x &= 200,\\
+y &= 200,\\
+A &= 100,\\
+B &= 300,\\
+P_x &= 200,\\
+P_y& = 200,\\
+C_x &= -8.83437e-11 \approx 0,\\
+C_y &= -4.61011e-12\approx 0,\\
+p &= 1.5
+\end{align*}
+
+
+\vspace{0.5cm}
+
+The optimal value of the objective function is $1800$
+
+The exit flag is the solver successfully found a globally optimal solution that satisfies all problem constraints and objective function within the standard numerical tolerances. The logs are as below:
+
+\lstinputlisting[
+caption={Exit flag and termination status},
+language=bash 
+]{exit_flag.txt}
+
+\section*{Model Setup}
+
+\subsection*{Variables and Parameters}
+\begin{description}
+    \item[Sets:] $\text{CRUDE\_OILS}=\{A,B,C\}$, $\text{PRODUCTS}=\{x,y\}$.
+    \item[Parameters:] Sulfur contents ($\text{Sulfur}_i$); product prices ($\text{Price}_j$); crude costs ($\text{Cost}_i$); demands ($\text{Demand}_j$); sulfur limits ($\text{SulfurLimit}_j$); capacity bound ($UB$).
+    \item[Decision Variables:] Product outputs ($x,y$); crude-to-pool flows ($A,B$); direct crude $C$ splits ($C_x,C_y$); pool-to-product flows ($P_x,P_y$); pool sulfur fraction ($p$).
+\end{description}
+
+\subsection*{Objective Function}
+The objective is to maximize the net profit:
+\[
+\max \; \text{Price}_x x + \text{Price}_y y - \text{Cost}_A A - \text{Cost}_B B - \text{Cost}_C (C_x + C_y).
+\]
+
+\subsection*{Constraints}
+The system is subject to the following mass balance and quality constraints:
+\[
+\begin{aligned}
+&\text{Pool Mass:} && P_x + P_y = A + B,\\
+&\text{Mixer }x: && x = P_x + C_x, \qquad \quad
+\text{Mixer }y: && y = P_y + C_y,\\
+&\text{Pool Sulfur:} && \text{Sulfur}_A A + \text{Sulfur}_B B = p(P_x + P_y),\\
+&\text{Spec }x: && p P_x + \text{Sulfur}_C C_x \le \text{SulfurLimit}_x\, x,\\
+&\text{Spec }y: && p P_y + \text{Sulfur}_C C_y \le \text{SulfurLimit}_y\, y.
+\end{aligned}
+\]
+The problem's \textbf{nonconvexity} arises from bilinear terms like $pP_x$, $pP_y$, and $p(P_x+P_y)$. Due to this, the global optimization solver \textbf{BARON} (Global NLP) is required.
+
+\section*{Initial Values}
+Default AMPL zeros are generally sufficient, as BARON performs rigorous bound tightening before starting the main algorithm. 
+
+\section*{Result Interpretation}
+
+\begin{itemize}
+    \item \textbf{Optimal Production ($x,y$):} These are the profit-maximizing production levels, checked against demand bounds.
+    \item \textbf{Optimal Flows ($A,B,C_x,C_y,P_x,P_y$):} These define the optimal crude allocation and blending strategy.
+    \item \textbf{Pool Sulfur ($p$):} The value of $p$ indicates the sulfur level of the intermediate pool. Binding sulfur specifications ($\text{Spec }x$ or $\text{Spec }y$) suggest that product quality, rather than cost or demand, is the limiting factor.
+    \item \textbf{Objective Value:} The final value represents the global maximum profit. The reported dual feasibility and the small optimality gap (within specified $\text{epsr}, \text{epsa}$) certify global optimality.
+\end{itemize}
+
+
+
+
+
+
+
+
+        
+		
+	\newpage
+	\item (30 points) \textbf{Multivariable Newton’s Method: Inverse Kinematics of a Robot Arm}  
+	
+	\textbf{Application background:}  
+	Consider a planar two-link robotic arm:  
+	\begin{itemize}
+		\item The first link has length $L_1 = 2$ m.  
+		\item The second link has length $L_2 = 1$ m.  
+	\end{itemize}
+	
+	The end-effector position $(x,y)$ is related to the two joint angles $\theta_1, \theta_2$ through the forward kinematics equations:
+	\[
+	x = L_1 \cos(\theta_1) + L_2 \cos(\theta_1 + \theta_2), \quad 
+	y = L_1 \sin(\theta_1) + L_2 \sin(\theta_1 + \theta_2).
+	\]
+	
+	\textbf{Inverse kinematics problem:}  
+	Given a desired target position $(x_a, y_a)=(2.0\text{m},1.0\text{m})$ for the end effector, use the \emph{multivariable Newton’s method} to solve for the joint angles $\theta_1$ and $\theta_2$.  
+	
+	Your program should:  
+	\begin{enumerate}
+		\item Implement the multivariable Newton’s method.   
+		\item Start from an initial guess for $(\theta_1, \theta_2)$ and iterate until convergence.  
+		\item Output the computed joint angles $(\theta_1, \theta_2)$, the number of iterations, and the final residual error\textbf{ similar to Lecture 2, page 28}.  
+		 
+	\end{enumerate}
+
+
+    \textbf{Solution}
+
+
+
+
+ $\mathbf{F}(\boldsymbol{\theta}) = \mathbf{0}$, where $\boldsymbol{\theta} = \begin{pmatrix} \theta_1 \\ \theta_2 \end{pmatrix}$ and $\mathbf{F}(\boldsymbol{\theta})$:
+
+$$\mathbf{F}(\theta_1, \theta_2) = \begin{pmatrix} f_1(\theta_1, \theta_2) \\ f_2(\theta_1, \theta_2) \end{pmatrix} = \begin{pmatrix} x - x_a \\ y - y_a \end{pmatrix}$$
+
+
+
+$$f_1(\theta_1, \theta_2) = 2 \cos(\theta_1) +  \cos(\theta_1 + \theta_2) - 2 $$
+$$
+f_2(\theta_1, \theta_2) = 2 \sin(\theta_1) + \sin(\theta_1 + \theta_2) - 1
+$$
+
+
+
+$$\boldsymbol{\theta}^{(k+1)} = \boldsymbol{\theta}^{(k)} - \mathbf{J}^{-1}(\boldsymbol{\theta}^{(k)}) \mathbf{F}(\boldsymbol{\theta}^{(k)})$$
+
+ $J_{ij} = \frac{\partial f_i}{\partial \theta_j}$:
+So
+$$
+\mathbf{J}(\theta_1, \theta_2) = \begin{pmatrix}
+\frac{\partial f_1}{\partial \theta_1} & \frac{\partial f_1}{\partial \theta_2} \\
+\frac{\partial f_2}{\partial \theta_1} & \frac{\partial f_2}{\partial \theta_2}
+\end{pmatrix}
+$$
+$$\mathbf{J}(\theta_1, \theta_2) = \begin{pmatrix}
+-2 \sin(\theta_1) - \sin(\theta_1 + \theta_2) & - \sin(\theta_1 + \theta_2) \\
+2 \cos(\theta_1) + \cos(\theta_1 + \theta_2) & \cos(\theta_1 + \theta_2)
+\end{pmatrix}$$
+
+Then we use python to do all steps(we use $\boldsymbol{\theta_0} = \begin{pmatrix}
+    0.5 \\ 0.5
+\end{pmatrix}$ as the initial value):
+\begin{verbatim}
+import numpy as np
+
+def forward_kinematics(theta, L1=2.0, L2=1.0):
+    theta1, theta2 = theta
+    x = L1 * np.cos(theta1) + L2 * np.cos(theta1 + theta2)
+    y = L1 * np.sin(theta1) + L2 * np.sin(theta1 + theta2)
+    return np.array([x, y])
+
+def residual(theta, target, L1=2.0, L2=1.0):
+    """F(theta) = f(theta) - target"""
+    return forward_kinematics(theta, L1, L2) - target
+
+def jacobian(theta, L1=2.0, L2=1.0):
+    """compute J"""
+    theta1, theta2 = theta
+    J=np.array([
+        [-L1*np.sin(theta1) - L2*np.sin(theta1 + theta2), 
+            -L2*np.sin(theta1 + theta2)],
+        [ L1*np.cos(theta1) + L2*np.cos(theta1 + theta2),  
+            L2*np.cos(theta1 + theta2)]
+    ])
+    return J
+
+def multivariable_newton(target=np.array([2.0, 1.0]), 
+                         theta0=np.array([0.5, 0.5]), 
+                         tol=1e-8, max_iter=50):
+    theta = theta0.copy()
+    history = []
+    for k in range(1, max_iter + 1):
+        F = residual(theta, target)
+        J = jacobian(theta)
+        delta = np.linalg.solve(J, F)
+        theta_next = theta - delta
+        err = np.linalg.norm(delta)
+        history.append((k, theta[0], theta[1], F[0], F[1], err))
+        theta = theta_next
+        if err < tol:
+            break
+    return theta, history
+def print_table(history):
+    rows = ""
+    rows+=f"k & theta_1 & theta_2 & f_1 & f_2 & ||Delta x|| \n"
+    for (k, t1, t2, f1, f2, err) in history:
+        rows+=f"{k} & {t1:.6f} & {t2:.6f} & {f1:.6f} & {f2:.6f} & {err:.6e} \n"
+    return rows
+theta_sol, history = multivariable_newton()
+print("theta:", theta_sol)
+print("Iterate times:", len(history))
+print(print_table(history))
+
+\end{verbatim}
+
+\hrule
+\vspace{0.5cm}
+
+Then we get the solution:
+$$\boldsymbol{\theta} = \begin{pmatrix}
+    1.26201044e-18 \\ 1.57079633e+00
+\end{pmatrix}$$
+
+i.e.
+
+$$\theta_1 = 1.26201044e-18, \theta_2 = 1.57079633e+00$$
+\begin{table}[h!]
+\centering
+
+\begin{tabular}{c|c|c|c|c|c}
+$k$ & $\theta_1$ & $\theta_2$ & $f_1$ & $f_2$ & $\|\Delta \theta\|$ \\
+\hline
+1 & 0.500000 & 0.500000 & 0.295467 & 0.800322 & 2.374667e+00 \\
+2 & -0.368841 & 2.710013 & -0.830913 & -1.003421 & 1.169309e+00 \\
+3 & -0.199764 & 1.552993 & 0.176082 & -0.420450 & 1.989272e-01 \\
+4 & -0.013469 & 1.622752 & -0.038659 & -0.027678 & 5.307944e-02 \\
+5 & -0.000366 & 1.571315 & -0.000153 & -0.000733 & 6.353004e-04 \\
+6 & -0.000000 & 1.570796 & -0.000000 & -0.000000 & 1.402003e-07 \\
+7 & -0.000000 & 1.570796 & -0.000000 & -0.000000 & 6.517775e-15 \\
+\end{tabular}
+\end{table}
+	\end{enumerate}
+
+\end{document}

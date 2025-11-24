@@ -1,0 +1,20 @@
+set CRUDE_OILS := A B C;
+set PRODUCTS   := x y;
+param Sulfur :=
+  A 3
+  B 1
+  C 2 ;
+param Price :=
+  x 9
+  y 15 ;
+param Cost :=
+  A 6
+  B 8
+  C 10 ;
+param Demand :=
+  x 200
+  y 200 ;
+param SulfurLimit :=
+  x 2.5
+  y 1.5 ;
+param UB := 500;

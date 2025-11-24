@@ -1,0 +1,15 @@
+solver: ipopt
+model: ../model/pooling.mod
+data: ../data/pooling.dat
+options:
+  max_iter: 1000
+  tol: 1e-6
+  print_level: 5
+  linear_solver: ma57
+  hessian_approximation: limited-memory
+  derivative_test: second-order
+  acceptable_tol: 1e-6
+  acceptable_iter: 10
+  acceptable_obj_change: 1e-6
+  acceptable_constr_change: 1e-6
+  print_info: 1

@@ -1,0 +1,665 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{a4paper,margin=1in}
+\title{Numerical Optimization — HW1}
+\date{\vspace{-5ex}}
+\author{\vspace{-5ex}} 
+
+\usepackage{comment} % enables the use of multi-line comments (\ifx \fi) 
+\usepackage{lipsum} %This package just generates Lorem Ipsum filler text. 
+\usepackage{fullpage} % changes the margin
+
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{enumitem}
+\usepackage{stackrel}
+\usepackage{mathtools,bm}
+\usepackage{mathrsfs}
+\usepackage{tcolorbox}
+\usepackage{comment} % enables the use of multi-line comments (\ifx \fi) 
+\usepackage{lipsum} %This package just generates Lorem Ipsum filler text. 
+\usepackage{fullpage} % changes the margin
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{float}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amsfonts}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{enumitem}
+\usepackage{stackrel}
+\usepackage{mathtools,bm}
+\usepackage{graphicx}
+\usepackage{dsfont}
+\usepackage{listings}
+
+\usepackage{booktabs}
+\def\d{\mathrm{d}}
+
+\begin{document}
+	\maketitle
+	\vspace{-9ex}
+	\begin{center}
+		\textbf{Deadline: October 21, 2025}
+	\end{center}
+	\begin{enumerate}
+		% 1
+        \item Consider the standard-form linear program
+        \[
+        \min\; c^\top x\quad\text{s.t.}\quad Ax=b,\; x\ge0,
+        \]
+        where \(A\in\mathbb R^{m\times n}\), \(b\in\mathbb R^m\), \(c\in\mathbb R^n\).
+        Let \(B=[b_1,\dots,b_m]\) be a basis consisting of \(m\) columns of \(A\), and let \(p\) be an entering variable (index of a column chosen to enter the basis). 
+        
+        Assume that the column $a_p$ of $A$ can be represented as a linear combination of the basis columns, and all the coefficients in this representation are nonpositive.
+        
+        Also assume that the right-hand-side vector $b$ can be expressed as a linear combination of the basis columns, and all the coefficients in this representation are nonnegative.
+        
+        Prove that the linear program is unbounded below.
+
+
+
+
+\textbf{Proof:}
+
+The current basic feasible solution is $x_B = B^{-1}b$, with $x_N = 0$.
+
+    $$x_B = B^{-1}b = \bar{b} \geq 0$$
+    The current objective value is $z_0 = c_B^\top x_B$.
+    
+ Because $p$ is the index of the entering non-basic variable,
+    So the reduced cost $\bar{c}_p$ to be strictly negative:
+    $$\bar{c}_p = c_p - c_B^\top B^{-1}a_p < 0$$
+
+ The column $a_p$ can be represented as a linear combination of the basis columns, $\mathbf{a}_p = B\bar{\mathbf{a}}_p$. All coefficients in this representation are non-positive:
+    $$\bar{\mathbf{a}}_p = B^{-1}a_p = \begin{pmatrix} \bar{a}_{1p} \\ \vdots \\ \bar{a}_{mp} \end{pmatrix} \leq 0$$
+
+
+Let $x^*$ be the current BFS: $x^* = \begin{pmatrix} x_B \\ x_N \end{pmatrix}$, where $x_B = \bar{b}$ and $x_N = 0$.
+
+We construct a feasible direction vector $d \in \mathbb{R}^n$ that, when followed from the current BFS $x^*$, remains feasible and reduces the objective function indefinitely.
+
+
+
+Define the direction vector $d$ as follows:
+\begin{align*}
+    d_p &= 1 \quad (\text{The entering non-basic variable index}) \\
+    d_j &= 0, \quad \text{for all other non-basic indices } j \neq p \\
+    d_B &= -B^{-1} a_p = -\bar{\mathbf{a}}_p \quad (\text{The components corresponding to basic variables})
+\end{align*}
+The vector $d$ can be written as $d = \begin{pmatrix} d_B \\ d_N \end{pmatrix}$.
+
+Then we want to prove $x(\theta) = x^* + \theta d$ is feasible
+
+
+\begin{itemize}
+    \item $x(\theta) \geq 0$:
+    \begin{itemize}
+        \item For non-basic indices $j \neq p$: $x_j(\theta) = x_j^* + \theta d_j = 0 + \theta \cdot 0 = 0 \geq 0$.
+        \item For index $p$: $x_p(\theta) = x_p^* + \theta d_p = 0 + \theta \cdot 1 = \theta \geq 0$.
+        \item For basic indices $i \in I_B$:
+        $$x_i(\theta) = x_i^* + \theta d_i = \bar{b}_i + \theta (-\bar{a}_{ip})$$
+        Since $\bar{b}_i \geq 0$ and, by assumption, $\bar{a}_{ip} \leq 0$, the term $d_i = -\bar{a}_{ip}$ is non-negative ($d_i \geq 0$).
+        Thus, $x_i(\theta) = \bar{b}_i + \theta d_i \geq 0$ for all $\theta \geq 0$.
+    \end{itemize}
+
+
+    \item $A x(\theta) = b$:
+    $$A x(\theta) = A(x^* + \theta d) = Ax^* + \theta Ad$$
+    Since $x^*$ is a BFS, $Ax^* = b$. We must show $Ad = 0$:
+    $$Ad = \sum_{j=1}^n a_j d_j = \sum_{i \in I_B} a_i d_i + a_p d_p$$
+    $$Ad = B d_B + a_p (1) = B(-\bar{\mathbf{a}}_p) + a_p = -B(B^{-1}a_p) + a_p = -a_p + a_p = 0$$
+    Therefore, $A x(\theta) = b + \theta \cdot 0 = b$.
+\end{itemize}
+So $x(\theta) = x^* + \theta d$ is feasible for all $\theta \geq 0$.
+
+Then we want to preve the objective value associated with $x(\theta)$ is unbounded.
+
+The objective value associated with $x(\theta)$ is:
+$$z(\theta) = c^\top x(\theta) = c^\top (x^* + \theta d) = c^\top x^* + \theta c^\top d$$
+The term $c^\top x^*$ is the current objective value $z_0$. The change in the objective value is determined by the term $c^\top d$:
+$$c^\top d = \sum_{j=1}^n c_j d_j = \sum_{i \in I_B} c_i d_i + c_p d_p$$
+$$c^\top d = c_B^\top d_B + c_p (1) = c_B^\top (-\bar{\mathbf{a}}_p) + c_p = c_p - c_B^\top \bar{\mathbf{a}}_p$$
+This expression is exactly the reduced cost of the entering variable $x_p$:
+$$c^\top d = \bar{c}_p$$
+By the Simplex rule for entering variables, we chose $p$ such that $\bar{c}_p < 0$.
+
+Thus, $z(\theta) = z_0 + \theta \bar{c}_p$. Since $\bar{c}_p < 0$, as $\theta \to \infty$, the objective value $z(\theta) \to -\infty$.
+
+Since a feasible ray $x(\theta)$ exists along which the objective function value decreases without bound, the linear program is \textbf{unbounded below}.
+
+
+		\newpage
+
+        % 2
+		\item Write down the standard form of the following problem, and solve it using the simplex method (show the simplex table at each iteration).
+        \begin{align*}
+            \text{max}\quad &2x_1 + x_2 - x_3 \\
+            \text{s.t.}\quad &x_1 + x_2 + 2x_3 \leq 6 \\ 
+            &x_1 + 4x_2 - x_3 \leq 4 \\ 
+            &x_1, x_2, x_3 \geq 0.
+        \end{align*}
+
+
+
+The standard form is:
+\begin{align*}
+	\text{max}\quad &z = 2x_1 + x_2 - x_3 + 0s_1 + 0s_2 \\
+	\text{s.t.}\quad &x_1 + x_2 + 2x_3 + s_1 = 6 \\
+	&x_1 + 4x_2 - x_3 + s_2 = 4 \\
+	&x_1, x_2, x_3, s_1, s_2 \geq 0
+\end{align*}
+
+The initial basic feasible solution is $x_1=x_2=x_3=0$, $s_1=6$, $s_2=4$, with $z=0$.
+
+\vspace{0.3cm}
+
+
+
+\textbf{Initial Tableau (Iteration 0)}
+The objective function (Row 0) is written as: $z - 2x_1 - x_2 + x_3 = 0$.
+
+\[
+\begin{array}{|c|c|ccccc|c|c|}
+	\hline
+	\text{Basis} & z & x_1 & x_2 & x_3 & s_1 & s_2 & b & \text{Ratio} \\
+	\hline
+	z & 1 & \mathbf{-2} & -1 & 1 & 0 & 0 & 0 & - \\
+	\hline
+	s_1 & 0 & 1 & 1 & 2 & 1 & 0 & 6 & 6/1 = 6 \\
+	s_2 & 0 & \mathbf{1} & 4 & -1 & 0 & 1 & 4 & 4/1 = \mathbf{4} \ \leftarrow \text{Leaving} \\
+	\hline
+\end{array}
+\]
+
+
+\textit{Pivot: Row $s_2$, Column $x_1$. $s_2$ leaves, $x_1$ enters.}
+
+
+\vspace{0.3cm}
+
+\textbf{Tableau 1 (Iteration 1)}
+
+\[
+\begin{array}{|c|c|ccccc|c|c|}
+	\hline
+	\text{Basis} & z & x_1 & x_2 & x_3 & s_1 & s_2 & b& \text{Ratio} \\
+	\hline
+	z & 1 & 0 & 7 & \mathbf{-1} & 0 & 2 & 8 & - \\
+	\hline
+	s_1 & 0 & 0 & -3 & \mathbf{3} & 1 & -1 & 2 & 2/3  \ \leftarrow \text{Leaving} \\
+	x_1 & 0 & 1 & 4 & -1 & 0 & 1 & 4 & - \\
+	\hline
+\end{array}
+\]
+
+
+\textit{Pivot: Row $s_1$, Column $x_3$. $s_1$ leaves, $x_3$ enters.}
+
+\vspace{0.3cm}
+
+\textbf{Tableau 2 (Iteration 2)}
+
+\[
+\begin{array}{|c|c|ccccc|c|}
+	\hline
+	\text{Basis} & z & x_1 & x_2 & x_3 & s_1 & s_2 & b \\
+	\hline
+	z & 1 & 0 & 6 & 0 & 1/3 & 5/3 & 26/3 \\
+	\hline
+	x_3 & 0 & 0 & -1 & 1 & 1/3 & -1/3 & 2/3 \\
+	x_1 & 0 & 1 & 3 & 0 & 1/3 & 2/3 & 14/3 \\
+	\hline
+\end{array}
+\]
+
+\vspace{0.3cm}
+
+
+
+Since all coefficients in the objective row (Row 0) are non-negative , the current solution is optimal.
+
+The optimal basic feasible solution is:
+\begin{itemize}
+	\item $x_1^* = 14/3$
+	\item $x_3^* = 2/3$
+	\item $x_2^* = 0$ (Non-basic)
+\end{itemize}
+
+The maximum objective value is $z^* = 26/3$.
+
+        
+		\newpage
+
+        % 3
+		\item Write down the equivalent linear programming formulation of the following problem.
+        
+        Given $A \in \mathbb{R}^{m\times n}, b \in \mathbb{R}^m, m > n $
+        \begin{enumerate}
+            \item AVE (absolute value error) linear regression:
+            \[\min_x \ || Ax - b||_1\]
+            \item Robust linear regression:
+            \[\min_x \ ||Ax - b||_{\infty} \]
+            \item Other equivalence:
+            \begin{align*}
+                &\min \ \max_{i=1, \dots, m} (c_i^Tx + d_i)\\
+                &\text{s.t.} \quad Ax \geq b
+            \end{align*}
+        \end{enumerate}
+
+        
+
+\begin{enumerate}[label=(\alph*)]
+	
+	\item 
+	
+	
+	
+	Let $y = Ax - b$, and introduce $z \in \mathbb{R}^m$, $z \geq 0$.
+	
+	The equivalent LP is:
+	\begin{align*}
+		\min_{x, z} &\sum_{i=1}^m z_i\\
+		\text{s.t.} \quad & (Ax - b)_i \leq z_i, \quad i = 1, \dots, m\\
+		& -(Ax - b)_i \leq z_i, \quad i = 1, \dots, m\\
+		& z_i \geq 0, \quad i = 1, \dots, m
+	\end{align*}
+	
+	\item 
+	
+	We introduce an auxiliary variable $t \in \mathbb{R}$. $t \geq |(Ax-b)_i|$ for all $i=1, \dots, m$, 
+	
+	The equivalent LP is:
+	\begin{align*}
+		\min_{x, t} &\quad t\\
+		\text{s.t.} \quad & (Ax - b)_i \leq t, \quad i = 1, \dots, m\\
+		& -(Ax - b)_i \leq t, \quad i = 1, \dots, m
+	\end{align*}
+	
+	\item 
+	
+	We introduce an auxiliary variable $t \in \mathbb{R}$. 
+	
+	The equivalent LP is:
+	\begin{align*}
+		\min_{x, t} & \quad t\\
+		\text{s.t.} \quad & c_i^Tx + d_i \leq t, \quad i = 1, \dots, m\\
+		& Ax \geq b
+	\end{align*}
+
+\end{enumerate}
+
+
+        
+		\newpage
+
+        % 4
+		\item 
+        \begin{enumerate}
+		    \item Show there exits 1-1 correspondence between the extreme points of the two problems.
+                \begin{align*}
+                    &S_1 = \{x \in \mathbb{R}^n: \ Ax \leq b, x \geq 0\}\\
+                    &S_2 = \{(x, y) \in \mathbb{R}^n \times \mathbb{R}^m: \ Ax + y = b, x \geq 0, y \geq 0 \}
+                \end{align*}
+            \item Does $P = \{x\in \mathbb{R}^2 \ |\  0 \leq x_1 \leq 1\}$ have extreme points? What is its standard form? Does it have extreme points? Find an extreme point if there exits one, and explain why.
+		\end{enumerate}
+        
+\begin{enumerate}
+    \item 
+   
+    For any $x \in S_1$, define $y = b - Ax$. Then $y \ge 0$ because $Ax \le b$. Hence $(x, y) \in S_2$.  
+    Conversely, for any $(x, y) \in S_2$, we have $Ax + y = b$ and $y \ge 0$, which implies $Ax \le b$, hence $x \in S_1$.  
+    Therefore, there is a one-to-one correspondence between $x \in S_1$ and $(x, y) \in S_2$ given by
+    \[
+        x \longleftrightarrow (x, b - Ax).
+    \]
+    Moreover, the extreme points correspond as well.  
+    Suppose $x$ is an extreme point of $S_1$. If $(x, b - Ax) = \lambda(x_1, y_1) + (1 - \lambda)(x_2, y_2)$ with $(x_i, y_i) \in S_2$, then taking the $x$-components gives
+    \[
+        x = \lambda x_1 + (1 - \lambda) x_2.
+    \]
+    Since $x$ is extreme in $S_1$, we must have $x_1 = x_2 = x$, and then $y_1 = y_2 = b - Ax$.  
+    Thus $(x, b - Ax)$ is extreme in $S_2$.  
+    The converse follows symmetrically.  
+    Hence, there exists a one-to-one correspondence between the extreme points of $S_1$ and $S_2$ via $(x, y) = (x, b - Ax)$.
+
+    \item 
+    $P$ has no extreme point. Then we prove it:
+    
+    Suppose it has an extreme point $a = (a_1, a_2)$, then $a_1 \in [0,1],a_2\in \mathbb{R}$
+    Then we can definitely find two points $y_1 = (a_1,0),y_2 =(a_1,2a_2)$, and $\lambda = \frac{1}{2}$,
+    because $a_2\in \mathbb{R}$ , so $2a_2 \in \mathbb{R}$
+    And
+    \[
+        a = \tfrac{1}{2}(a_1, 0) + \tfrac{1}{2}(a_1, 2a_2),
+    \]
+    which are two distinct feasible points, so $x$ is not extreme.  
+    
+    Therefore, $P$ has no extreme points.
+
+    The standard form of $P$ is obtained by introducing a slack variable $y_1$:
+\[
+P' = \{x'=[x_1,x_2,x_3,x_4]\in \mathbb{R}^4 \ | \begin{bmatrix}1 & 1 & 0 & 0\end{bmatrix}x' = \mathbf{1},x' \ge 0\},
+\]
+    The corresponding feasible region $P'$ has 2 extreme points: $(1,0,0,0)$ and $(0,1,0,0)$.  
+
+    Because for  point $x' = [x_1,1-x_1,x_3,x_4]$, we can always find two points $y_1' = [c,1-c,x_3,x_4],y_2' = [2x_1-c,1-2x_1+c,x_3,x_4]$  and $\lambda  =\frac{1}{2}$,and because $x_1\geq 0$, so $2x_1 \geq 0$
+        \[
+        x_1' = \tfrac{1}{2}[c,1-c,x_3,x_4]+ \tfrac{1}{2}[2x_1-c,1-2x_1+c,x_3,x_4],
+    \]
+    Only when $x_1=0$ or $x_1=1$, $c=2x_1-c=x_1$, the point $x'=y_1'=y_2'$
+   
+    Hence $P'$ has 2 extreme points: $(1,0,0,0)$ and $(0,1,0,0)$. 
+
+\end{enumerate}
+
+
+		
+	    \newpage
+
+        % 5
+    	\item Write down the dual problem of the following linear programming problem.
+        \begin{align*}
+            \text{min}\quad -2x_1 + 4x_2 - x_3 + x_4 \\
+            \text{s.t.}\qquad x_1 + 2x_2 + 4x_3 + x_4 &\leq 20 \\ 
+            -x_1 + x_2 &\leq 3 \\ 
+            x_1 &\le 4 \\
+            x_3 - 5x_4 &\leq 5 \\
+            -x_3 + 2x_4 &\leq 2 \\
+            x_1, x_2, x_3, x_4 &\geq 0. 
+        \end{align*}
+
+$$
+\begin{aligned}
+\text{Lagrange} = \quad &(-2x_1 + 4x_2 - x_3 + x_4) \\
+&+\lambda_1 (x_1 + 2x_2 + 4x_3 + x_4 - 20) \\
+&+\lambda_2 (-x_1 + x_2 - 3) \\
+&+\lambda_3 (x_1 - 4) \\
+&+\lambda_4 (x_3 - 5x_4 - 5) \\
+&+\lambda_5 (-x_3 + 2x_4 - 2) \\
+&+\lambda_6 (-x_1) + \lambda_7 (-x_2) + \lambda_8 (-x_3) + \lambda_9 (-x_4) \\
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+L(\mathbf{x}, \boldsymbol{\lambda}) = \quad &(-2 + \lambda_1 - \lambda_2 + \lambda_3 - \lambda_6) x_1 \\
++ \quad &(4 + 2\lambda_1 + \lambda_2 - \lambda_7) x_2 \\
++ \quad &(-1 + 4\lambda_1 + \lambda_4 - \lambda_5 - \lambda_8) x_3 \\
++ \quad &(1 + \lambda_1 - 5\lambda_4 + 2\lambda_5 - \lambda_9) x_4 \\
++ \quad &(-20\lambda_1 - 3\lambda_2 - 4\lambda_3 - 5\lambda_4 - 2\lambda_5)
+\end{aligned}
+$$
+
+So the dual problem is 
+\begin{align*}
+\text{max}\quad & -20\lambda_1 - 3\lambda_2 - 4\lambda_3 - 5\lambda_4 - 2\lambda_5 \\
+\text{s.t.}\quad & \lambda_1 - \lambda_2 + \lambda_3 \leq 2 \\
+& 2\lambda_1 + \lambda_2 \leq -4 \\
+& 4\lambda_1 + \lambda_4 - \lambda_5 \leq 1 \\
+& \lambda_1 - 5\lambda_4 + 2\lambda_5 \leq -1 \\
+& \lambda_1, \lambda_2, \lambda_3, \lambda_4, \lambda_5 \geq 0.
+\end{align*}
+
+        \newpage
+
+        % 6
+    	\item Write down the primal-dual optimality conditions (primal feasibility, dual feasibility, and complementary slackness) for the following problem (i.e., the conditions shown on page 23 of the Duality lecture slides).
+        \begin{align*}
+            \text{max}\qquad \quad5x_1 - 2x_3 + x_4 &\\
+            \text{s.t.}\qquad x_1 + x_2 + x_3 + x_4 &\leq 30 \\ 
+            x_1 + x_2 &\leq 12 \\ 
+            2x_1 - x_2&\le 9 \\
+            -x_3 + x_4 &\leq 2 \\
+            x_3 + 2x_4 &\leq 10 \\
+            x_1, x_2, x_3, x_4 &\geq 0. 
+        \end{align*}
+
+
+
+
+
+
+\textbf{Dual Problem:}
+\begin{align*}
+	\text{min}\quad w = 30y_1 + 12y_2 + 9y_3 + 2y_4 + 10y_5 &\\
+	\text{s.t.}\quad y_1 + y_2 + 2y_3 &\geq 5 \\
+	y_1 + y_2 - y_3 &\geq 0  \\
+	y_1 - y_4 + y_5 &\geq -2  \\
+	y_1 + y_4 + 2y_5 &\geq 1 \\
+	y_1, y_2, y_3, y_4, y_5 &\geq 0
+\end{align*}
+
+
+
+\textbf{Primal-Dual Optimality Conditions}
+
+
+\textbf{1. Primal Feasibility }
+The primal solution $\mathbf{x}^* = (x_1^*, x_2^*, x_3^*, x_4^*)$ must satisfy:
+$$
+\begin{aligned}
+x_1^* + x_2^* + x_3^* + x_4^* &\leq 30 \\
+x_1^* + x_2^* &\leq 12 \\
+2x_1^* - x_2^* &\leq 9 \\
+-x_3^* + x_4^* &\leq 2 \\
+x_3^* + 2x_4^* &\leq 10 \\
+x_j^* &\geq 0, \quad j=1, \dots, 4
+\end{aligned}
+$$
+
+\textbf{2. Dual Feasibility }
+The dual solution $\mathbf{y}^* = (y_1^*, y_2^*, y_3^*, y_4^*, y_5^*)$ must satisfy:
+$$
+\begin{aligned}
+y_1^* + y_2^* + 2y_3^* &\geq 5 \\
+y_1^* + y_2^* - y_3^* &\geq 0 \\
+y_1^* - y_4^* + y_5^* &\geq -2 \\
+y_1^* + y_4^* + 2y_5^* &\geq 1 \\
+y_i^* &\geq 0, \quad i=1, \dots, 5
+\end{aligned}
+$$
+
+\textbf{3. Complementarity}
+\begin{enumerate}[]
+	\item \textbf{Primal Slack $\times$ Dual Variable $= 0$:}
+	
+	$$
+	\begin{aligned}
+	y_1^* (30 - (x_1^* + x_2^* + x_3^* + x_4^*)) &= 0 \\
+	y_2^* (12 - (x_1^* + x_2^*)) &= 0 \\
+	y_3^* (9 - (2x_1^* - x_2^*)) &= 0 \\
+	y_4^* (2 - (-x_3^* + x_4^*)) &= 0 \\
+	y_5^* (10 - (x_3^* + 2x_4^*)) &= 0
+	\end{aligned}
+	$$
+	
+	\item \textbf{Dual Slack $\times$ Primal Variable $= 0$:}
+	
+	$$
+	\begin{aligned}
+	x_1^* (y_1^* + y_2^* + 2y_3^* - 5) &= 0 \\
+	x_2^* (y_1^* + y_2^* - y_3^* - 0) &= 0 \\
+	x_3^* (y_1^* - y_4^* + y_5^* - (-2)) &= 0 \\
+	x_4^* (y_1^* + y_4^* + 2y_5^* - 1) &= 0
+	\end{aligned}
+	$$
+\end{enumerate}
+
+
+        \newpage
+
+        % 7
+    	\item \textbf{Urban Water Supply Network Scheduling}
+        
+        A city operates a water distribution network consisting of:
+        \begin{itemize}
+            \item 5 reservoirs (supply nodes),
+            \item 2 transfer stations (transit nodes),
+            \item 8 residential areas (demand nodes),
+            \item 19 pipelines connecting the nodes.
+        \end{itemize}
+        
+        The water utility company must develop a supply plan that satisfies all residential water demands while minimizing the total transportation cost.
+        
+        \textbf{Data Description:}
+        \begin{itemize}
+            \item \textbf{Node types:}
+            \begin{itemize}
+                \item Nodes 1--5: reservoirs (supply nodes)
+                \item Nodes 6--7: transfer stations (transit nodes)
+                \item Nodes 8--15: residential areas (demand nodes)
+            \end{itemize}
+            
+            \item \textbf{Pipeline data (19 edges):}
+            Each pipeline has a start node, an end node, a capacity (tons/hour), and a unit cost (CNY/ton).
+            \begin{table}[h!]
+            \centering
+            % \caption{Pipeline data: start and end nodes, capacities, and unit costs.}
+            \begin{tabular}{|c||c|c|c|c|}
+            \hline
+            \textbf{Pipeline ID} & \textbf{Start Node} & \textbf{End Node} & \textbf{Capacity} & \textbf{Unit Cost} \\
+            \hline
+            \hline
+            1  & 1 & 6  & 50 & 2 \\
+            \hline
+            2  & 1 & 7  & 40 & 3 \\
+            \hline
+            3  & 2 & 6  & 60 & 1 \\
+            \hline
+            4  & 2 & 8  & 30 & 4 \\
+            \hline
+            5  & 3 & 7  & 45 & 2 \\
+            \hline
+            6  & 3 & 9  & 35 & 3 \\
+            \hline
+            7  & 4 & 6  & 55 & 1 \\
+            \hline
+            8  & 4 & 10 & 25 & 5 \\
+            \hline
+            9  & 5 & 7  & 40 & 2 \\
+            \hline
+            10 & 5 & 11 & 30 & 4 \\
+            \hline
+            11 & 6 & 8  & 40 & 2 \\
+            \hline
+            12 & 6 & 9  & 35 & 1 \\
+            \hline
+            13 & 7 & 10 & 30 & 3 \\
+            \hline
+            14 & 7 & 11 & 25 & 2 \\
+            \hline
+            15 & 6 & 7  & 20 & 1 \\
+            \hline
+            16 & 6 & 12 & 30 & 2 \\
+            \hline
+            17 & 6 & 13 & 30 & 1 \\
+            \hline
+            18 & 7 & 14 & 30 & 2 \\
+            \hline
+            19 & 7 & 15 & 30 & 3 \\
+            \hline
+            \end{tabular}
+            \end{table}
+
+            \item \textbf{Supply and demand data:}
+            \begin{itemize}
+                \item Reservoir supplies: 
+                \[
+                \text{Node 1: } 40,\quad
+                \text{Node 2: } 50,\quad
+                \text{Node 3: } 45,\quad
+                \text{Node 4: } 40,\quad
+                \text{Node 5: } 35
+                \]
+                \item Residential demands:
+                \[
+                \text{Node 8: } 25,\quad
+                \text{Node 9: } 30,\quad
+                \text{Node 10: } 20,\quad
+                \text{Node 11: } 25,
+                \]
+                \[
+                \text{Node 12: } 15,\quad
+                \text{Node 13: } 20,\quad
+                \text{Node 14: } 25,\quad
+                \text{Node 15: } 15
+                \]
+                \item Transfer stations: Node 6 and Node 7 have zero net supply/demand.
+            \end{itemize}
+        \end{itemize}
+        
+        \textbf{Task:}
+        \begin{enumerate}
+            \item Formulate this problem as a linear programming (LP) model.
+            \item Clearly specify the decision variables, objective function, and constraints.
+            \item Use excel solver to find the optimal solution and the minimum total cost.
+            \item Submit the corresponding excel file along with your written solution.
+        \end{enumerate}
+
+\[
+\begin{aligned}
+\textbf{Decision variables: } 
+&\quad p_i \ge 0, \quad i = 1, 2, \dots, 19, \text{ denote the flow through pipeline } i. \\[0.5em]
+%
+\textbf{Objective: } 
+&\quad \min Z = 2p_1 + 3p_2 + 1p_3 + 4p_4 + 2p_5 + 3p_6 + 1p_7 + 5p_8 + 2p_9 + 4p_{10} \\
+&\qquad\qquad + 2p_{11} + 1p_{12} + 3p_{13} + 2p_{14} + 1p_{15} + 2p_{16} + 1p_{17} + 2p_{18} + 3p_{19} \\[0.5em]
+%
+\textbf{Subject to:} \\[0.25em]
+%
+\text{(Supply node 1)} &\quad p_1 + p_2 \le 40, \\[0.25em]
+\text{(Supply node 2)} &\quad p_3 + p_4 \le 50, \\[0.25em]
+\text{(Supply node 3)} &\quad p_5 + p_6 \le 45, \\[0.25em]
+\text{(Supply node 4)} &\quad p_7 + p_8 \le 40, \\[0.25em]
+\text{(Supply node 5)} &\quad p_9 + p_{10} \le 35, \\[0.5em]
+%
+\text{(Transit node 6)} &\quad (p_1 + p_3 + p_7) - (p_{11} + p_{12} + p_{15} + p_{16} + p_{17}) \geq 0, \\[0.25em]
+\text{(Transit node 7)} &\quad (p_2 + p_5 + p_9 + p_{15}) - (p_{13} + p_{14} + p_{18} + p_{19}) \geq 0, \\[0.5em]
+%
+\text{(Demand node 8)} &\quad p_4 + p_{11} \geq 25, \\[0.25em]
+\text{(Demand node 9)} &\quad p_6 + p_{12} \geq  30, \\[0.25em]
+\text{(Demand node 10)} &\quad p_8 + p_{13} \geq  20, \\[0.25em]
+\text{(Demand node 11)} &\quad p_{10} + p_{14} \geq  25, \\[0.25em]
+\text{(Demand node 12)} &\quad p_{16} \geq  15, \\[0.25em]
+\text{(Demand node 13)} &\quad p_{17} \geq  20, \\[0.25em]
+\text{(Demand node 14)} &\quad p_{18} \geq  25, \\[0.25em]
+\text{(Demand node 15)} &\quad p_{19} \geq  15, \\[0.5em]
+\text{(Positive)} &\quad  p_i \geq 0, \quad i = 1, \dots, 19. \\[0.5em]
+%
+\text{(Pipeline capacities)} & \quad p_i \le \text{capacity}_i, \quad i = 1, \dots, 19.
+\end{aligned}
+\]
+
+
+        
+        \newpage
+
+\textbf{Specification}
+
+For every variable $p_i$ i =1,2,...,19 denotes the flow through each pipeline, the constraints denote that the flow out of supply nodes should less than its  capabilities, and at the same time the flow in the residential area should satisfy the demand, and the flow out of  transfer nodes should less than the flow in it, and the flow through pipeline should more than 0. So we have s seires inequality constraints. We want to minimize the total cost, so we need to $\min \text{Obj}$, where the Obj function is the sum of each pipeline cost, which equals to Unit Cost $\times$ flow through this pipeline
+
+
+
+\textbf{Optimal Decision Variables ($p_i^*$)}
+
+The optimal values for the decision variables $p_i$ ($i=1$ to $i=19$) are:
+$$
+\mathbf{p}^* = (p_1^*, p_2^*, \dots, p_{19}^*) = (5, 0, 50, 0, 45, 0, 35, 5, 10, 25, 25, 30, 15, 0, 0, 15, 20, 25, 15)
+$$
+
+\textbf{Minimum Total Cost ($Z^*$)}
+
+The minimum optimal value of the objective function (minimum total cost) is:
+$$
+Z^* = \sum_{i=1}^{19} c_i p_i^* = 600
+$$
+	\end{enumerate}
+
+\end{document}
+2
